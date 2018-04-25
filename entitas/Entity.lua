@@ -59,9 +59,9 @@ function M:activate(uid)
 end
 
 --[[
-Adds a component.
-:param comp_type: table type
-:param ...: (optional) data values
+ Adds a component.
+param comp_type: table type
+param ...: (optional) data values
 ]]
 function M:add(comp_type, ...)
     if not self._is_enabled then
