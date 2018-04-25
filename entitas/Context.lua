@@ -72,7 +72,7 @@ function Context:destroy_entity(entity)
         error("The context does not contain this entity.")
     end
 
-    entity:destory()
+    entity:destroy()
 
     set_remove(self.entities, entity)
     table_insert(self._entities_pool, entity)

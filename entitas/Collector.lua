@@ -20,9 +20,9 @@ end
 
 function Collector:activate()
     for group, group_event in pairs(self._groups) do
-        local added_event = group_event == GroupEvent.added
-        local removed_event = group_event == GroupEvent.removed
-        local added_or_removed_event = group_event == GroupEvent.added_or_removed
+        local added_event = group_event == GroupEvent.ADDED
+        local removed_event = group_event == GroupEvent.REMOVED
+        local added_or_removed_event = group_event == GroupEvent.ADDED_OR_REMOVED
 
         if added_event or added_or_removed_event then
             group.on_entity_added:remove(self.add_entity)

@@ -113,7 +113,6 @@ end
 function Group:_add_entity(entity, component)
     local entity_added = self:_add_entity_silently(entity)
     if entity_added then
-        --print("size", #self.on_entity_added._listeners)
         self.on_entity_added(entity, component)
     end
 end

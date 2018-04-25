@@ -156,7 +156,8 @@ function Entity:remove_all()
     end
 end
 
-function Entity:destory()
+-- use context destroy entity
+function Entity:destroy()
     self._is_enabled = false
     self:remove_all()
 end
