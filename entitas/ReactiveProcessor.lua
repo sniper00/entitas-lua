@@ -3,7 +3,7 @@ local class = util.class
 local table_insert = table.insert
 local Collector = require("entitas.Collector")
 
-local ReactiveProcessor = class("ReactiveProcessor")
+local M = class("ReactiveProcessor")
 
 local function get_collector(self, context)
     local trigger = self:get_trigger()
@@ -22,36 +22,36 @@ local function get_collector(self, context)
     return collector
 end
 
-function ReactiveProcessor:ctor(context)
+function M:ctor(context)
     self._collector = get_collector(self, context)
     self._buffer = {}
 end
 
-function ReactiveProcessor:get_trigger()
+function M:get_trigger()
     error("not imp")
 end
 
-function ReactiveProcessor:filter()
+function M:filter()
     error("not imp")
 end
 
-function ReactiveProcessor:react()
+function M:react()
     error("not imp")
 end
 
-function ReactiveProcessor:activate()
+function M:activate()
     self._collector:activate()
 end
 
-function ReactiveProcessor:deactivate()
+function M:deactivate()
     self._collector:deactivate()
 end
 
-function ReactiveProcessor:clear()
+function M:clear()
     self._collector:clear_collected_entities()
 end
 
-function ReactiveProcessor:execute()
+function M:execute()
     if self._collector.collected_entities then
         for entity ,_ in pairs(self._collector.collected_entities) do
             if self:filter(entity) then
@@ -68,4 +68,4 @@ function ReactiveProcessor:execute()
     end
 end
 
-return ReactiveProcessor
+return M

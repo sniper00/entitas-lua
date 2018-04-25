@@ -3,7 +3,7 @@ local class             = util.class
 local table_insert      = table.insert
 local ReactiveProcessor = require("entitas.ReactiveProcessor")
 
-local Processors = class("Processors")
+local M = class("Processors")
 
 local function isinstance(a, b)
     if a.__cname == b.__cname then
@@ -20,14 +20,14 @@ local function isinstance(a, b)
     return false
 end
 
-function Processors:ctor()
+function M:ctor()
     self._initialize_processors = {}
     self._execute_processors = {}
     self._cleanup_processors = {}
     self._tear_down_processors = {}
 end
 
-function Processors:add(processor)
+function M:add(processor)
     if processor.initialize then
         table_insert(self._initialize_processors, processor)
     end
@@ -45,64 +45,64 @@ function Processors:add(processor)
     end
 end
 
-function Processors:initialize()
+function M:initialize()
     for _, processor in pairs(self._initialize_processors) do
         processor:initialize()
     end
 end
 
-function Processors:execute()
+function M:execute()
     for _, processor in pairs(self._execute_processors) do
         processor:execute()
     end
 end
 
-function Processors:cleanup()
+function M:cleanup()
     for _, processor in pairs(self._cleanup_processors) do
         processor:cleanup()
     end
 end
 
-function Processors:tear_down()
+function M:tear_down()
     for _, processor in pairs(self._tear_down_processors) do
         processor:tear_down()
     end
 end
 
-function Processors:activate_reactive_processors()
+function M:activate_reactive_processors()
     for _, processor in pairs(self._execute_processors) do
         if isinstance(processor, ReactiveProcessor) then
             processor:activate()
         end
 
-        if isinstance(processor, Processors) then
+        if isinstance(processor, M) then
             processor:activate_reactive_processors()
         end
     end
 end
 
-function Processors:deactivate_reactive_processors()
+function M:deactivate_reactive_processors()
     for _, processor in pairs(self._execute_processors) do
         if isinstance(processor, ReactiveProcessor) then
             processor:deactivate()
         end
 
-        if isinstance(processor, Processors) then
+        if isinstance(processor, M) then
             processor:deactivate_reactive_processors()
         end
     end
 end
 
-function Processors:clear_reactive_processors()
+function M:clear_reactive_processors()
     for _, processor in pairs(self._execute_processors) do
         if isinstance(processor, ReactiveProcessor) then
             processor:clear()
         end
 
-        if isinstance(processor, Processors) then
+        if isinstance(processor, M) then
             processor:clear_reactive_processors()
         end
     end
 end
 
-return Processors
+return M

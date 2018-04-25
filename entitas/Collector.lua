@@ -2,23 +2,22 @@ local set           = require("unorderset")
 local GroupEvent    = require("entitas.GroupEvent")
 local set_insert    = set.insert
 
-local Collector  = {}
-Collector.__index = Collector
+local M  = {}
+M.__index = M
 
-function Collector.new()
-
+function M.new()
     local tb = {}
     tb.collected_entities = set.new()
     tb._groups = {}
     tb.add_entity = function(...) return tb._add_entity(tb, ...) end
-    return setmetatable(tb, Collector)
+    return setmetatable(tb, M)
 end
 
-function Collector:add(group, group_event)
+function M:add(group, group_event)
     self._groups[group] = group_event
 end
 
-function Collector:activate()
+function M:activate()
     for group, group_event in pairs(self._groups) do
         local added_event = group_event == GroupEvent.ADDED
         local removed_event = group_event == GroupEvent.REMOVED
@@ -36,7 +35,7 @@ function Collector:activate()
     end
 end
 
-function Collector:deactivate()
+function M:deactivate()
     for group, _ in pairs(self._groups) do
         group.on_entity_added:remove(self.add_entity)
         group.on_entity_removed:remove(self.add_entity)
@@ -45,12 +44,12 @@ function Collector:deactivate()
     self:clear_collected_entities()
 end
 
-function Collector:clear_collected_entities()
+function M:clear_collected_entities()
     self.collected_entities = set.new()
 end
 
-function Collector:_add_entity(entity)
+function M:_add_entity(entity)
     set_insert(self.collected_entities, entity)
 end
 
-return Collector
+return M

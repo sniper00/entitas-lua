@@ -1,7 +1,6 @@
 local util       = require("util")
+local Components = require('Components')
 local class      = util.class
-local Components = require('example.HelloWorld.Components')
-local DebugMessageComponent = Components.DebugMessage
 
 local HelloWorldSystem = class("HelloWorldSystem")
 
@@ -13,7 +12,7 @@ function HelloWorldSystem:initialize()
     --create an entity and give it a DebugMessageComponent with
     --the text "Hello World!" as its data
     local entity = self.context:create_entity()
-    entity:add(DebugMessageComponent,"HelloWorld")
+    entity:add(Components.DebugMessage,"HelloWorld")
 end
 
 

@@ -1,14 +1,15 @@
 local lu = require('test.luaunit')
+local entitas = require('entitas')
 
-local Entity = require('entitas.Entity')
-local Context = require('entitas.Context')
-local Matcher = require('entitas.Matcher')
-local Collector = require('entitas.Collector')
-local MakeComponent = require('entitas.MakeComponent')
-local GroupEvent = require("entitas.GroupEvent")
-local EntityIndex = require('entitas.EntityIndex')
-local PrimaryEntityIndex = require('entitas.PrimaryEntityIndex')
-local Processors = require('entitas.Processors')
+local Entity = entitas.Entity
+local Context = entitas.Context
+local Matcher = entitas.Matcher
+local Collector = entitas.Collector
+local MakeComponent = entitas.MakeComponent
+local GroupEvent = entitas.GroupEvent
+local EntityIndex = entitas.EntityIndex
+local PrimaryEntityIndex = entitas.PrimaryEntityIndex
+local Processors = entitas.Processors
 
 local Position = MakeComponent("Position", "x", "y", "z")
 local Movable = MakeComponent("Movable", "speed")
@@ -124,7 +125,7 @@ GLOBAL.test_entity =  function()
     entity:add(Position, 1, 4, 5)
     entity:add(Movable, 0.56)
     assert(entity:has(Position, Movable))
-    entity:destory()
+    entity:destroy()
     assert(not entity:has(Position, Movable))
 end
 

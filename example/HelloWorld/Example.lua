@@ -1,12 +1,17 @@
 --  Bring your systems together
-local Context = require('entitas.Context')
-local Processors = require('entitas.Processors')
-local HelloWorldSystem = require('example.HelloWorld.Systems.HelloWorldSystem')
-local DebugMessageSystem = require('example.HelloWorld.Systems.DebugMessageSystem')
-local CleanupDebugMessageSystem = require('example.HelloWorld.Systems.CleanupDebugMessageSystem')
-local Components = require('example.HelloWorld.Components')
-local Matcher = require('entitas.Matcher')
-local DebugMessageComponent = Components.DebugMessage
+
+package.path = "../../?.lua;"..package.path
+
+local entitas = require('entitas')
+local Context = entitas.Context
+local Processors = entitas.Processors
+local Matcher = entitas.Matcher
+
+local Components = require('Components')
+local HelloWorldSystem = require('Systems.HelloWorldSystem')
+local DebugMessageSystem = require('Systems.DebugMessageSystem')
+local CleanupDebugMessageSystem = require('Systems.CleanupDebugMessageSystem')
+
 local _context = Context.new()
 
 local processors = Processors.new()
@@ -17,7 +22,7 @@ processors:add(CleanupDebugMessageSystem.new(_context))
 processors:activate_reactive_processors()
 processors:initialize()
 
-local _group = _context:get_group(Matcher({DebugMessageComponent}))
+local _group = _context:get_group(Matcher({Components.DebugMessage}))
 assert(_group.entities:size() == 1)
 processors:execute()
 processors:cleanup()
