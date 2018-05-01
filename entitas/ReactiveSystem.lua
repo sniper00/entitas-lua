@@ -3,12 +3,12 @@ local class = util.class
 local table_insert = table.insert
 local Collector = require("entitas.Collector")
 
-local M = class("ReactiveProcessor")
+local M = class("ReactiveSystem")
 
 local function get_collector(self, context)
     local trigger = self:get_trigger()
-    local collector = Collector.new()
-
+    assert(#trigger%2==0,"")
+    local groups = {}
     local matcher, group_event
     for k, v in pairs(trigger) do
         if k % 2 ~= 0 then
@@ -16,10 +16,10 @@ local function get_collector(self, context)
         else
             group_event = v
             local group = context:get_group(matcher)
-            collector:add(group, group_event)
+            groups[group] = group_event
         end
     end
-    return collector
+    return Collector.new(groups)
 end
 
 function M:ctor(context)
@@ -48,18 +48,18 @@ function M:deactivate()
 end
 
 function M:clear()
-    self._collector:clear_collected_entities()
+    self._collector:clear_entities()
 end
 
 function M:execute()
-    if self._collector.collected_entities then
-        for entity ,_ in pairs(self._collector.collected_entities) do
+    if self._collector.entities then
+        self._collector.entities:foreach(function(entity)
             if self:filter(entity) then
                 table_insert(self._buffer, entity)
             end
-        end
+        end)
 
-        self._collector:clear_collected_entities()
+        self._collector:clear_entities()
 
         if #self._buffer > 0 then
             self:react(self._buffer)

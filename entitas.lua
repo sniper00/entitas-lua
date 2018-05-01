@@ -10,6 +10,6 @@ return {
     MakeComponent = require("entitas.MakeComponent"),
     Matcher = require("entitas.Matcher"),
     PrimaryEntityIndex = require("entitas.PrimaryEntityIndex"),
-    Processors = require("entitas.Processors"),
-    ReactiveProcessor = require("entitas.ReactiveProcessor"),
+    Systems = require("entitas.Systems"),
+    ReactiveSystem = require("entitas.ReactiveSystem"),
 }

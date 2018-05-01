@@ -53,12 +53,13 @@ assert(_group:single_entity():has(Movable))
 
 ## Entity Collector
 ```lua
-local context = Context.new()
-local group = context:get_group(Matcher({Position}))
-local collector = Collector.new()
-collector:add(group, GroupEvent.added)
-collector:clear_collected_entities()
-collector:deactivate()
+    local context = Context.new()
+    local group = context:get_group(Matcher({Position}))
+    local groups = {}
+    groups[group] = GroupEvent.ADD
+    local collector = Collector.new(groups)
+    collector:clear_entities()
+    collector:deactivate()
 ```
 
 ## Entity Index
@@ -79,14 +80,14 @@ local entities = idx:get_entities(42)
 ## Setup example
 ```lua
 local _context = Context.new()
-local processors = Processors.new()
-processors:add(StartGame)
-processors:add(MoveSystem)
-processors:add(EndSystem)
+local systems = Systems.new()
+systems:add(StartGameSystem.new(_context))
+systems:add(MoveSystem.new(_context))
+systems:add(EndSystem.new(_context))
 
-processors:initialize()
+systems:initialize()
 
-processors:execute()
+systems:execute()
 
-processors:tear_down()
+systems:tear_down()
 ```

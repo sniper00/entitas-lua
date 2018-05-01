@@ -1,13 +1,13 @@
 local util       = require("util")
 local entitas    = require('entitas')
 local Components = require('Components')
-local ReactiveProcessor = entitas.ReactiveProcessor
+local ReactiveSystem = entitas.ReactiveSystem
 local Matcher    = entitas.Matcher
 local GroupEvent = entitas.GroupEvent
 
 local class      = util.class
 
-local DebugMessageSystem = class("DebugMessageSystem",ReactiveProcessor)
+local DebugMessageSystem = class("DebugMessageSystem",ReactiveSystem)
 
 function DebugMessageSystem:ctor(context)
     self.context = context

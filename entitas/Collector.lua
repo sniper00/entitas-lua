@@ -5,18 +5,18 @@ local set_insert    = set.insert
 local M  = {}
 M.__index = M
 
-function M.new()
+function M.new(groups)
     local tb = {}
-    tb.collected_entities = set.new()
-    tb._groups = {}
+    tb.entities = set.new()
+    tb._groups = groups
     tb.add_entity = function(...) return tb._add_entity(tb, ...) end
-    return setmetatable(tb, M)
+    tb = setmetatable(tb, M)
+    tb.activate(tb)
+    return tb
 end
 
-function M:add(group, group_event)
-    self._groups[group] = group_event
-end
-
+--Activates the Collector and will start collecting
+--changed entities. Collectors are activated by default.
 function M:activate()
     for group, group_event in pairs(self._groups) do
         local added_event = group_event == GroupEvent.ADDED
@@ -41,15 +41,15 @@ function M:deactivate()
         group.on_entity_removed:remove(self.add_entity)
     end
 
-    self:clear_collected_entities()
+    self:clear_entities()
 end
 
-function M:clear_collected_entities()
-    self.collected_entities = set.new()
+function M:clear_entities()
+    self.entities:clear()
 end
 
 function M:_add_entity(entity)
-    set_insert(self.collected_entities, entity)
+    set_insert(self.entities, entity)
 end
 
 return M
