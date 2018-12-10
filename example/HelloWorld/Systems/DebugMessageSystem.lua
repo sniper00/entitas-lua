@@ -5,7 +5,7 @@ local Matcher = require('entitas.Matcher')
 local Components = require('example.HelloWorld.Components')
 local GroupEvent = require("entitas.GroupEvent")
 
-local DebugMessageComponent = Components.DebugMessage
+local class      = util.class
 
 local DebugMessageSystem = class("DebugMessageSystem",ReactiveSystem)
 
@@ -24,7 +24,7 @@ end
 function DebugMessageSystem:filter(entity)
     --good practice to perform a final check in case 
     --the entity has been altered in a different system.
-    return entity:has(DebugMessageComponent)
+    return entity:has(Components.DebugMessage)
 end
 
 function DebugMessageSystem:execute(entites)

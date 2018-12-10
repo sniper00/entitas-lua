@@ -17,7 +17,7 @@ systems:add(CleanupDebugMessageSystem.new(_context))
 systems:activate_reactive_systems()
 systems:initialize()
 
-local _group = _context:get_group(Matcher({DebugMessageComponent}))
+local _group = _context:get_group(Matcher({Components.DebugMessage}))
 assert(_group.entities:size() == 1)
 systems:execute()
 systems:cleanup()
