@@ -1,6 +1,6 @@
 --  Bring your systems together
 local Context = require('entitas.Context')
-local Processors = require('entitas.Processors')
+local Systems = require('entitas.Systems')
 local HelloWorldSystem = require('example.HelloWorld.Systems.HelloWorldSystem')
 local DebugMessageSystem = require('example.HelloWorld.Systems.DebugMessageSystem')
 local CleanupDebugMessageSystem = require('example.HelloWorld.Systems.CleanupDebugMessageSystem')
@@ -9,19 +9,19 @@ local Matcher = require('entitas.Matcher')
 local DebugMessageComponent = Components.DebugMessage
 local _context = Context.new()
 
-local processors = Processors.new()
-processors:add(HelloWorldSystem.new(_context))
-processors:add(DebugMessageSystem.new(_context))
-processors:add(CleanupDebugMessageSystem.new(_context))
+local systems = Systems.new()
+systems:add(HelloWorldSystem.new(_context))
+systems:add(DebugMessageSystem.new(_context))
+systems:add(CleanupDebugMessageSystem.new(_context))
 
-processors:activate_reactive_processors()
-processors:initialize()
+systems:activate_reactive_systems()
+systems:initialize()
 
 local _group = _context:get_group(Matcher({DebugMessageComponent}))
 assert(_group.entities:size() == 1)
-processors:execute()
-processors:cleanup()
+systems:execute()
+systems:cleanup()
 assert(_group.entities:size() == 0)
 
-processors:clear_reactive_processors()
-processors:tear_down()
+systems:clear_reactive_systems()
+systems:tear_down()

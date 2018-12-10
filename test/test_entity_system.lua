@@ -1,14 +1,18 @@
 local lu = require('test.luaunit')
 
-local Entity = require('entitas.Entity')
-local Context = require('entitas.Context')
-local Matcher = require('entitas.Matcher')
-local Collector = require('entitas.Collector')
-local MakeComponent = require('entitas.MakeComponent')
-local GroupEvent = require("entitas.GroupEvent")
-local EntityIndex = require('entitas.EntityIndex')
-local PrimaryEntityIndex = require('entitas.PrimaryEntityIndex')
-local Processors = require('entitas.Processors')
+local util = require("util")
+local class = util.class
+local entitas = require("entitas")
+local Entity =entitas.Entity
+local Context = entitas.Context
+local Matcher = entitas.Matcher
+local Collector = entitas.Collector
+local MakeComponent = entitas.MakeComponent
+local GroupEvent = entitas.GroupEvent
+local EntityIndex = entitas.EntityIndex
+local PrimaryEntityIndex = entitas.PrimaryEntityIndex
+local Systems = entitas.Systems
+local ReactiveSystem = entitas.ReactiveSystem
 
 local Position = MakeComponent("Position", "x", "y", "z")
 local Movable = MakeComponent("Movable", "speed")
@@ -21,9 +25,15 @@ local GLOBAL = _G
 GLOBAL.test_collector =  function()
     local context = Context.new()
     local group = context:get_group(Matcher({Position}))
-    local collector = Collector.new()
-    collector:add(group, GroupEvent.added)
-    collector:clear_collected_entities()
+    local pair = {}
+    pair[group] = GroupEvent.ADDED|GroupEvent.REMOVED
+    local collector = Collector.new(pair)
+    local _entity = context:create_entity()
+    _entity:add(Position,1,2,3)
+    lu.assertEquals(collector.entities:size(),1)
+    context:destroy_entity(_entity)
+    lu.assertEquals(collector.entities:size(),0)
+    collector:clear_entities()
     collector:deactivate()
 end
 
@@ -38,14 +48,14 @@ GLOBAL.test_context =  function()
     assert(Context.set_unique_component)
     assert(Context.get_unique_component)
 
-    lu.assertEquals(_context:has_entity(_entity), true)
+    assert(_context:has_entity(_entity))
     lu.assertEquals(_context:entity_size(), 1)
     _context:destroy_entity(_entity)
     assert(not _context:has_entity(_entity))
 
     -- reuse
     local _e2 = _context:create_entity()
-    lu.assertEquals(_context:has_entity(_entity), true)
+    assert(_context:has_entity(_entity))
     lu.assertEquals(_context:entity_size(), 1)
 
 
@@ -57,9 +67,6 @@ end
 GLOBAL.test_index =  function()
     local context = Context.new()
     local group = context:get_group(Matcher({Person}))
-
-    --print("group", group)
-
     local index = EntityIndex.new(Person, group, 'age')
     context:add_entity_index(index)
     local adam = context:create_entity()
@@ -75,13 +82,8 @@ GLOBAL.test_index =  function()
 end
 
 GLOBAL.test_primary_index =  function()
-
-    local ett = Entity.new()
     local context = Context.new()
     local group = context:get_group(Matcher({Person}))
-    group = context:get_group(Matcher({Person}))
-    group = context:get_group(Matcher({Person}))
-
     local primary_index = PrimaryEntityIndex.new(Person, group, 'name')
     context:add_entity_index(primary_index)
 
@@ -104,7 +106,7 @@ GLOBAL.test_entity =  function()
     entity:activate(0)
     entity:add(Position, 1, 4, 5)
     assert(entity:has(Position))
-    assert(entity:has_any(Position))
+    assert(entity:has_any({Position}))
 
     local pos = entity:get(Position)
     assert(pos.x == 1)
@@ -124,7 +126,7 @@ GLOBAL.test_entity =  function()
     entity:add(Position, 1, 4, 5)
     entity:add(Movable, 0.56)
     assert(entity:has(Position, Movable))
-    entity:destory()
+    entity:destroy()
     assert(not entity:has(Position, Movable))
 end
 
@@ -136,6 +138,8 @@ GLOBAL.test_group =  function()
     _entity:add(Movable, 1)
 
     local _group = _context:get_group(Matcher({Movable}))
+    local _group2 = _context:get_group(Matcher({Movable}))
+    assert(_group==_group2)
 
     assert(_group.entities:size() == 1)
     assert(_group:single_entity():has(Movable))
@@ -189,9 +193,9 @@ GLOBAL.test_matches =  function()
         {CompD, CompE},
         {CompF}
     )
-    assert(matcher:matches(ea))
-    assert(not matcher:matches(eb))
-    assert(not matcher:matches(ec))
+    assert(matcher:match_entity(ea))
+    assert(not matcher:match_entity(eb))
+    assert(not matcher:match_entity(ec))
 end
 
 GLOBAL.test_10000_entities = function()
@@ -217,42 +221,77 @@ GLOBAL.test_10000_entities = function()
 end
 
 
-local StartGame = {
-        initialize = function() print("StartGame initialize") end
-    }
-
-local MoveSystem = {
-        execute = function() print("MoveSystem execute") end
-    }
-
-local EndSystem = {
-        tear_down = function() print("EndSystem tear_down") end
-    }
-
-
-
 GLOBAL.test_system = function()
 
+    -------------------------------------------
+    local StartGame = class("StartGame")
+    function StartGame:ctor(context)
+        self.context = context
+    end
+
+    function StartGame:initialize()
+        print("StartGame initialize")
+        local entity = self.context:create_entity()
+        entity:add(Movable,123)
+    end
+
+    -------------------------------------------
+    local EndSystem = class("EndSystem")
+    function EndSystem:ctor(context)
+        self.context = context
+    end
+
+    function EndSystem:tear_down()
+        print("EndSystem tear_down")
+    end
+
+    -------------------------------------------
+    local MoveSystem = class("MoveSystem", ReactiveSystem)
+
+    function MoveSystem:ctor(context)
+        MoveSystem.super.ctor(self, context)
+    end
+
+    local trigger = {
+        {
+            Matcher({Movable}),
+            GroupEvent.ADDED | GroupEvent.UPDATE
+        }
+    }
+
+    function MoveSystem:get_trigger()
+        return trigger
+    end
+
+    function MoveSystem:filter(entity)
+        return entity:has(Movable)
+    end
+
+    function MoveSystem:execute(es)
+        es:foreach(function( e  )
+            print("ReactiveSystem: add entity with component Movable.",e)
+        end)
+    end
+
     local _context = Context.new()
+    local systems = Systems.new()
+    systems:add(StartGame.new(_context))
+    systems:add(MoveSystem.new(_context))
+    systems:add(EndSystem.new(_context))
 
-    local processors = Processors.new()
-    processors:add(StartGame)
-    processors:add(MoveSystem)
-    processors:add(EndSystem)
+    systems:initialize()
 
-    processors:initialize()
+    systems:execute()
 
-    processors:execute()
-
-    processors:tear_down()
+    systems:tear_down()
 end
 
-    local runner = lu.LuaUnit.new()
-    runner:setOutputType("tap")
-    local ret = runner:runSuite()
-    if 0 == ret then
-        print("test_entity_system success with result "..ret)
-    else
-        print("test_entity_system failed with result "..ret)
-    end
+local runner = lu.LuaUnit.new()
+runner:setOutputType("tap")
+local ret = runner:runSuite()
+if 0 == ret then
+    print("test_entity_system success with result "..ret)
+else
+    print("test_entity_system failed with result "..ret)
+end
 

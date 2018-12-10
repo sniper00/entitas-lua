@@ -12,9 +12,10 @@ function CleanupDebugMessageSystem:ctor(context)
 end
 
 function CleanupDebugMessageSystem:cleanup()
-    for entity,_ in pairs(self._debugMessages.entities) do
-        self.context:destroy_entity(entity)
-    end
+    local entitas = self._debugMessages.entities
+    entitas:foreach(function ( e )
+        self.context:destroy_entity(e)
+    end)
 end
 
 return CleanupDebugMessageSystem

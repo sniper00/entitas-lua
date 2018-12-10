@@ -107,6 +107,24 @@ function M.table_equal(t1,t2)
     return true
 end
 
+function M.table_contains( arraytable, value )
+    for _,v in pairs(arraytable) do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
+function M.table_intersect( t1, t2 )
+    for k,v in pairs(t1) do
+        if t2[k] == v then
+            return true
+        end
+    end
+    return false
+end
+
 
 ----------------------------------STRING---------------------------------------
 
@@ -218,10 +236,10 @@ function M.exists(path)
 end
 
 function M.readfile(path)
-    local file = M.open(path, "rb")
+    local file = io.open(path, "rb")
     if file then
         local content = file:read("*a")
-        M.close(file)
+        io.close(file)
         return content
     end
     return nil
@@ -229,12 +247,12 @@ end
 
 function M.writefile(path, content, mode)
     mode = mode or "w+b"
-    local file = M.open(path, mode)
+    local file = io.open(path, mode)
     if file then
         if file:write(content) == nil then
             return false
         end
-        M.close(file)
+        io.close(file)
         return true
     else
         return false
@@ -310,6 +328,7 @@ function M.class(classname, super)
     local superType = type(super)
     local cls
     if not super or superType == "table" then
+        -- inherited from Lua Object
         if super then
             cls = {}
             setmetatable(cls, {__index = super})
