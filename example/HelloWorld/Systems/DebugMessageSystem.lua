@@ -1,11 +1,9 @@
 local util       = require("util")
 local class      = util.class
-local ReactiveSystem = require("entitas.ReactiveSystem")
-local Matcher = require('entitas.Matcher')
+local ReactiveSystem = require("entitas").ReactiveSystem
+local Matcher = require("entitas").Matcher
 local Components = require('example.HelloWorld.Components')
-local GroupEvent = require("entitas.GroupEvent")
-
-local class      = util.class
+local GroupEvent = require("entitas").GroupEvent
 
 local DebugMessageSystem = class("DebugMessageSystem",ReactiveSystem)
 
@@ -17,7 +15,7 @@ end
 function DebugMessageSystem:get_trigger()
     --we only care about entities with DebugMessageComponent
     return {
-        {Matcher({DebugMessageComponent}),GroupEvent.ADDED}
+        {Matcher({Components.DebugMessage}),GroupEvent.ADDED}
     }
 end
 
@@ -29,7 +27,7 @@ end
 
 function DebugMessageSystem:execute(entites)
     entites:foreach(function(e)
-        print(e:get(DebugMessageComponent).message)
+        print(e:get(Components.DebugMessage).message)
     end)
 end
 

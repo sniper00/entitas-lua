@@ -6,7 +6,6 @@ local DebugMessageSystem = require('example.HelloWorld.Systems.DebugMessageSyste
 local CleanupDebugMessageSystem = require('example.HelloWorld.Systems.CleanupDebugMessageSystem')
 local Components = require('example.HelloWorld.Components')
 local Matcher = require('entitas.Matcher')
-local DebugMessageComponent = Components.DebugMessage
 local _context = Context.new()
 
 local systems = Systems.new()

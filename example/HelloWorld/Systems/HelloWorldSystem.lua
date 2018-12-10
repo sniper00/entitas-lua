@@ -1,5 +1,5 @@
 local util       = require("util")
-local Components = require('Components')
+local Components = require('example.HelloWorld.Components')
 local class      = util.class
 
 local HelloWorldSystem = class("HelloWorldSystem")

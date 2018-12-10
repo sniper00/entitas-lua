@@ -1,5 +1,5 @@
 local util       = require("util")
-local Components = require('Components')
+local Components = require('example.HelloWorld.Components')
 local Matcher = require('entitas').Matcher
 local class      = util.class
 
