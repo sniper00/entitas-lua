@@ -1,42 +1,39 @@
 local util = require("util")
-local class = util.class
-local table_insert = table.insert
+local array = require("array")
 local Collector = require("entitas.Collector")
+local class = util.class
 
 local M = class("ReactiveSystem")
 
 local function get_collector(self, context)
     local trigger = self:get_trigger()
-    assert(#trigger%2==0,"")
     local groups = {}
-    local matcher, group_event
-    for k, v in pairs(trigger) do
-        if k % 2 ~= 0 then
-            matcher = v
-        else
-            group_event = v
-            local group = context:get_group(matcher)
-            groups[group] = group_event
-        end
+
+    for _,one in pairs(trigger) do
+        local matcher = one[1]
+        local group_event = one[2]
+        local group = context:get_group(matcher)
+        groups[group] = group_event
     end
+
     return Collector.new(groups)
 end
 
 function M:ctor(context)
     self._collector = get_collector(self, context)
-    self._buffer = {}
+    self._buffer = array.new()
 end
 
 function M:get_trigger()
-    error("not imp")
+    error(self.__cname.." 'get_trigger' not implemented")
 end
 
 function M:filter()
-    error("not imp")
+    error(self.__cname.." 'filter' not implemented")
 end
 
-function M:react()
-    error("not imp")
+function M:execute()
+    error(self.__cname.." 'execute' not implemented")
 end
 
 function M:activate()
@@ -51,19 +48,19 @@ function M:clear()
     self._collector:clear_entities()
 end
 
-function M:execute()
-    if self._collector.entities then
+function M:_execute()
+    if self._collector.entities:size()>0 then
         self._collector.entities:foreach(function(entity)
             if self:filter(entity) then
-                table_insert(self._buffer, entity)
+                self._buffer:push(entity)
             end
         end)
 
         self._collector:clear_entities()
 
-        if #self._buffer > 0 then
-            self:react(self._buffer)
-            self._buffer = {}
+        if self._buffer:size() > 0 then
+            self:execute(self._buffer)
+            self._buffer:clear()
         end
     end
 end

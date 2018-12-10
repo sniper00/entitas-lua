@@ -52,8 +52,6 @@ GLOBAL.test_context = function()
     lu.assertEquals(_context:entity_size(), 1)
     _context:destroy_entity(_entity)
     assert(not _context:has_entity(_entity))
-
-    local entity2 = _context:create_entity()
     -- reuse
     local _e2 = _context:create_entity()
     assert(_context:has_entity(_entity))
