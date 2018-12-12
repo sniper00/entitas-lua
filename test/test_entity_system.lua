@@ -122,9 +122,9 @@ GLOBAL.test_entity = function()
 
     entity:add(Position, 1, 4, 5)
     entity:add(Movable, 0.56)
-    assert(entity:has(Position, Movable))
+    assert(entity:has_all({Position, Movable}))
     entity:destroy()
-    assert(not entity:has(Position, Movable))
+    assert(not entity:has_all({Position, Movable}))
 end
 
 GLOBAL.test_group = function()

@@ -6,6 +6,12 @@ entitas-lua is a port of [Entitas ECS for C# and Unity](https://github.com/sschm
 
 entitas-lua reference [entitas-python](https://github.com/Aenyhm/entitas-python)
 
+# Run Test and Example
+```
+    ./lua test/test_entity_system.lua
+    ./lua example/HelloWorld/Example.lua
+```
+
 # Overview
 
 ## Components
@@ -41,9 +47,9 @@ local Person = MakeComponent("Person", "name","age")
 
     entity:add(Position, 1, 4, 5)
     entity:add(Movable, 0.56)
-    assert(entity:has(Position, Movable))
+    assert(entity:has_all({Position, Movable}))
     entity:destroy()
-    assert(not entity:has(Position, Movable))
+    assert(not entity:has_all({Position, Movable}))
 ```
 ## Context
 ```lua
