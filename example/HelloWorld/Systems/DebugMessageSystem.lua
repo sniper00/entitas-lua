@@ -1,5 +1,3 @@
-local util       = require("util")
-local class      = util.class
 local ReactiveSystem = require("entitas").ReactiveSystem
 local Matcher = require("entitas").Matcher
 local Components = require('example.HelloWorld.Components')

@@ -1,7 +1,5 @@
-local util = require("util")
-local array = require("array")
+local array = require("base.array")
 local Collector = require("entitas.Collector")
-local class = util.class
 
 local M = class("ReactiveSystem")
 
@@ -21,7 +19,7 @@ end
 
 function M:ctor(context)
     self._collector = get_collector(self, context)
-    self._buffer = array.new()
+    self._entities = array.new(true)
 end
 
 function M:get_trigger()
@@ -49,18 +47,19 @@ function M:clear()
 end
 
 function M:_execute()
+    local entities = self._entities
     if self._collector.entities:size()>0 then
         self._collector.entities:foreach(function(entity)
             if self:filter(entity) then
-                self._buffer:push(entity)
+                entities:push(entity)
             end
         end)
 
         self._collector:clear_entities()
 
-        if self._buffer:size() > 0 then
-            self:execute(self._buffer)
-            self._buffer:clear()
+        if entities:size() > 0 then
+            self:execute(entities)
+            entities:clear()
         end
     end
 end

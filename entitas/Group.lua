@@ -1,5 +1,5 @@
 local Delegate = require("entitas.Delegate")
-local set = require("set")
+local set = require("base.set")
 local set_insert = set.insert
 local set_remove = set.remove
 local set_size = set.size
@@ -29,7 +29,7 @@ function M.new(matcher)
     -- Occurs when a component of an entity in the group gets replaced.
     tb.on_entity_updated = Delegate.new()
     tb._matcher = matcher
-    tb.entities = set.new()
+    tb.entities = set.new(true)
     return setmetatable(tb, M)
 end
 

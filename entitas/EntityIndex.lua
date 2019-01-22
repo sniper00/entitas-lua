@@ -1,8 +1,6 @@
-local set           = require("set")
-local util           = require("util")
+local set           = require("base.set")
 local set_insert    = set.insert
 local set_remove    = set.remove
-local class         = util.class
 
 local AbstractEntityIndex = require("entitas.AbstractEntityIndex")
 
@@ -15,7 +13,7 @@ end
 function M:get_entities(key)
     --print("key", key)
     if not self._indexes[key] then
-        self._indexes[key] = set.new()
+        self._indexes[key] = set.new(true)
     end
     return self._indexes[key]
 end

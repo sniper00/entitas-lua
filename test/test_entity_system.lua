@@ -1,7 +1,4 @@
 local lu = require('test.luaunit')
-
-local util = require("util")
-local class = util.class
 local entitas = require("entitas")
 local Entity =entitas.Entity
 local Context = entitas.Context

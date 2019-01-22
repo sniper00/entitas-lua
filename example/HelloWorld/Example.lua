@@ -1,11 +1,14 @@
 --  Bring your systems together
-local Context = require('entitas.Context')
-local Systems = require('entitas.Systems')
+local entitas = require("entitas")
 local HelloWorldSystem = require('example.HelloWorld.Systems.HelloWorldSystem')
 local DebugMessageSystem = require('example.HelloWorld.Systems.DebugMessageSystem')
 local CleanupDebugMessageSystem = require('example.HelloWorld.Systems.CleanupDebugMessageSystem')
 local Components = require('example.HelloWorld.Components')
-local Matcher = require('entitas.Matcher')
+
+local Context = entitas.Context
+local Systems = entitas.Systems
+local Matcher = entitas.Matcher
+
 local _context = Context.new()
 
 local systems = Systems.new()
