@@ -23,7 +23,7 @@ GLOBAL.test_collector = function()
     local context = Context.new()
     local group = context:get_group(Matcher({Position}))
     local pair = {}
-    pair[group] = GroupEvent.ADDED|GroupEvent.REMOVED
+    pair[group] = GroupEvent.ADDED..GroupEvent.REMOVED
     local collector = Collector.new(pair)
     local _entity = context:create_entity()
     _entity:add(Position,1,2,3)
@@ -247,7 +247,7 @@ GLOBAL.test_system = function()
     local trigger = {
         {
             Matcher({Movable}),
-            GroupEvent.ADDED | GroupEvent.UPDATE
+            GroupEvent.ADDED .. GroupEvent.UPDATE
         }
     }
 

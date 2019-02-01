@@ -1,8 +1,8 @@
 
 local M = {
-    ADDED = 1,
-    REMOVED = 2,
-    UPDATE= 4
+    ADDED = "A",
+    REMOVED = "R",
+    UPDATE= "U",
 }
 
 return M

@@ -21,15 +21,15 @@ end
 --changed entities. Collectors are activated by default.
 function M:activate()
     for group, group_event in pairs(self._groups) do
-        if 0 ~= (group_event & GroupEvent.ADDED) and not group.on_entity_added:has(self.add_entity) then
+        if group_event:find(GroupEvent.ADDED) and not group.on_entity_added:has(self.add_entity) then
             group.on_entity_added:add(self.add_entity)
         end
 
-        if 0 ~= (group_event & GroupEvent.REMOVED) and not group.on_entity_removed:has(self.remove_entity) then
+        if group_event:find(GroupEvent.REMOVED) and not group.on_entity_removed:has(self.remove_entity) then
             group.on_entity_removed:add(self.remove_entity)
         end
 
-        if 0 ~= (group_event & GroupEvent.UPDATE) and not group.on_entity_updated:has(self.add_entity) then
+        if group_event:find(GroupEvent.UPDATE) and not group.on_entity_updated:has(self.add_entity) then
             group.on_entity_updated:add(self.add_entity)
         end
     end
