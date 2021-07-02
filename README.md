@@ -207,4 +207,3 @@ local Person = MakeComponent("Person", "name","age")
 
     systems:tear_down()
 ```
-## [A complete example](https://github.com/sniper00/BallGame)
